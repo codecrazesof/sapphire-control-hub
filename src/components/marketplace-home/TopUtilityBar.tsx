@@ -864,12 +864,35 @@ function Notifications({ t }: { t: (s: string) => string }) {
     staleTime: 1000 * 60 * 5,
   });
 
-  const items = q.data ?? [];
-  const unread = items.filter((n) => !lastSeen || n.published_at > lastSeen).length;
+  const [appNotifs, setAppNotifs] = useState(() => listNotifications());
+  useEffect(() => {
+    const sync = () => setAppNotifs(listNotifications());
+    sync();
+    return subscribeApps(sync);
+  }, []);
+
+  const items = useMemo<Notification[]>(
+    () => [
+      ...appNotifs.map((n) => ({
+        id: n.id,
+        title: n.title,
+        body: n.body,
+        kind: n.kind === "application" ? "update" : "promo",
+        link_url: "/admin/applications",
+        published_at: n.createdAt,
+      })),
+      ...(q.data ?? []),
+    ],
+    [appNotifs, q.data],
+  );
+  const unread =
+    appNotifs.filter((n) => !n.read).length +
+    (q.data ?? []).filter((n) => !lastSeen || n.published_at > lastSeen).length;
 
   return (
     <Popover
       onOpenChange={(open) => {
+        if (open) markAllRead();
         if (open && items.length) {
           const newest = items.reduce((a, b) => (a > b.published_at ? a : b.published_at), "");
           localStorage.setItem("sv_notif_seen", newest);
