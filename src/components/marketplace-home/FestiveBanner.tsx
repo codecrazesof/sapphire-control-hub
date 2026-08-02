@@ -35,7 +35,7 @@ const FestiveBanner = () => {
   }, []);
 
   if (dismissed) return null;
-  const item = announcements[index];
+  const item = announcements[index]!;
   const Icon = item.icon;
   const color = COLORS[index % COLORS.length];
 

@@ -41,7 +41,7 @@ const HeroCarousel = () => {
   }, [current, total]);
 
   if (!total) return null;
-  const product = slides[Math.min(current, total - 1)];
+  const product = slides[Math.min(current, total - 1)]!;
   const Icon = ICONS[product.icon_name] ?? Boxes;
 
   return (

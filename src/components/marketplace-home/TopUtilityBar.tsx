@@ -231,7 +231,7 @@ function LanguagePicker({
         {busy ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <span className="text-sm leading-none">{current.flag}</span>
+          <span className="text-sm leading-none">{current?.flag}</span>
         )}
         <span className="hidden sm:inline">{t("Language")}</span>
         <Globe2 className="h-3.5 w-3.5 text-cyan-200 transition-transform duration-500 group-hover:rotate-180" />
@@ -442,7 +442,10 @@ function Weather({ t }: { t: (s: string) => string }) {
   });
 
   const locate = () => {
-    if (!navigator.geolocation) return toast.error("Geolocation not supported by this browser.");
+    if (!navigator.geolocation) {
+      toast.error("Geolocation not supported by this browser.");
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (p) => setCoords({ lat: p.coords.latitude, lon: p.coords.longitude }),
       () => toast.error("Location permission denied — search a city instead."),
@@ -638,7 +641,7 @@ function evaluate(expr: string): number | null {
       ops.pop();
     } else {
       if ((tk === "-" || tk === "+") && (prev === null || prev === "(" || prec[prev])) out.push(0);
-      while (ops.length && prec[ops[ops.length - 1]] >= prec[tk]) out.push(ops.pop()!);
+      while (ops.length && (prec[ops[ops.length - 1]!] ?? 0) >= (prec[tk] ?? 0)) out.push(ops.pop()!);
       ops.push(tk);
     }
     prev = tk;
@@ -952,8 +955,8 @@ function LoginPill({ t }: { t: (s: string) => string }) {
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUserEmail(data.session?.user.email ?? null));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) =>
+    supabase.auth.getSession().then(({ data }: any) => setUserEmail(data.session?.user.email ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e: any, session: any) =>
       setUserEmail(session?.user.email ?? null),
     );
     return () => sub.subscription.unsubscribe();
