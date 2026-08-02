@@ -313,7 +313,7 @@ export const FALLBACK_HERO_SLIDES: HeroSlide[] = [
     id: "hero-18",
     slug: "don-t-build-software-from-scratch",
     kicker: "Ready to Deploy",
-    title: "Don"t Build Software From Scratch",
+    title: "Don’t Build Software From Scratch",
     subtitle: "Start with Ready-Made Solutions.",
     cta_primary: "Get Started",
     cta_secondary: "Watch Live Demo",
