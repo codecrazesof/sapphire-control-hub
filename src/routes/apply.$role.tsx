@@ -13,7 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import "@/styles/marketplace-home.css";
-import { ROLES, getRole, type Field } from "@/lib/applications/config";
+import { getRole, type Field } from "@/lib/applications/config";
 import { submitApplication } from "@/lib/applications/store";
 
 export const Route = createFileRoute("/apply/$role")({
@@ -337,5 +337,3 @@ function InfoCard({ icon: Icon, title, body }: { icon: any; title: string; body:
     </div>
   );
 }
-
-export { ROLES };
