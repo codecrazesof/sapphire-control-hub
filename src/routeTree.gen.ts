@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as ApplyIndexRouteImport } from './routes/apply.index'
 import { Route as ApplyRoleRouteImport } from './routes/apply.$role'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/admin/applications',
+  path: '/admin/applications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApplyIndexRoute = ApplyIndexRouteImport.update({
@@ -31,30 +37,34 @@ const ApplyRoleRoute = ApplyRoleRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/apply/$role': typeof ApplyRoleRoute
   '/apply/': typeof ApplyIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/apply/$role': typeof ApplyRoleRoute
   '/apply': typeof ApplyIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/apply/$role': typeof ApplyRoleRoute
   '/apply/': typeof ApplyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/apply/$role' | '/apply/'
+  fullPaths: '/' | '/admin/applications' | '/apply/$role' | '/apply/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/apply/$role' | '/apply'
-  id: '__root__' | '/' | '/apply/$role' | '/apply/'
+  to: '/' | '/admin/applications' | '/apply/$role' | '/apply'
+  id: '__root__' | '/' | '/admin/applications' | '/apply/$role' | '/apply/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminApplicationsRoute: typeof AdminApplicationsRoute
   ApplyRoleRoute: typeof ApplyRoleRoute
   ApplyIndexRoute: typeof ApplyIndexRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/admin/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apply/': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminApplicationsRoute: AdminApplicationsRoute,
   ApplyRoleRoute: ApplyRoleRoute,
   ApplyIndexRoute: ApplyIndexRoute,
 }
