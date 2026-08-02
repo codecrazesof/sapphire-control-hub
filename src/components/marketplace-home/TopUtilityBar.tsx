@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { listNotifications, markAllRead, subscribe as subscribeApps } from "@/lib/applications/store";
 import {
   Popover,
   PopoverContent,
@@ -78,14 +80,13 @@ function PanelHead({ icon: Icon, title, note }: { icon: any; title: string; note
 /* ------------------------------------------------------------------ */
 
 const APPLY_ROLES: { key: string; label: string; blurb: string }[] = [
-  { key: "reseller", label: "Reseller", blurb: "Sell our catalog, keep the margin" },
-  { key: "vendor", label: "Vendor", blurb: "List your own software products" },
-  { key: "author", label: "Author", blurb: "Publish code, docs and templates" },
-  { key: "affiliate", label: "Affiliate", blurb: "Earn per referred sale" },
-  { key: "franchise", label: "Franchise", blurb: "Run Software Vala in your city" },
-  { key: "influencer", label: "Influencer", blurb: "Collaborate on campaigns" },
-  { key: "developer", label: "Developer", blurb: "Join the build team" },
-  { key: "employee", label: "Employee", blurb: "Full-time openings" },
+  { key: "vendor", label: "Become Vendor", blurb: "List your own software products" },
+  { key: "author", label: "Become Author", blurb: "Publish code, docs and templates" },
+  { key: "reseller", label: "Become Reseller", blurb: "Sell our catalog, keep the margin" },
+  { key: "affiliate", label: "Become Affiliate", blurb: "Earn per referred sale" },
+  { key: "franchise", label: "Become Franchise", blurb: "Run Software Vala in your city" },
+  { key: "influencer", label: "Become Influencer", blurb: "Collaborate on campaigns" },
+  { key: "employee", label: "Become Employee", blurb: "Full-time openings" },
 ];
 
 function ApplyNow({ t }: { t: (s: string) => string }) {
@@ -108,12 +109,12 @@ function ApplyNow({ t }: { t: (s: string) => string }) {
             className="kr-item cursor-pointer focus:bg-white/10"
             style={{ animationDelay: `${i * 28}ms` }}
           >
-            <a href={`/careers?type=${r.key}`}>
+            <Link to="/apply/$role" params={{ role: r.key }}>
               <div className="flex w-full flex-col">
                 <span className="text-[12.5px] font-semibold">{r.label}</span>
                 <span className="text-[10.5px] text-white/50">{r.blurb}</span>
               </div>
-            </a>
+            </Link>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -863,12 +864,35 @@ function Notifications({ t }: { t: (s: string) => string }) {
     staleTime: 1000 * 60 * 5,
   });
 
-  const items = q.data ?? [];
-  const unread = items.filter((n) => !lastSeen || n.published_at > lastSeen).length;
+  const [appNotifs, setAppNotifs] = useState(() => listNotifications());
+  useEffect(() => {
+    const sync = () => setAppNotifs(listNotifications());
+    sync();
+    return subscribeApps(sync);
+  }, []);
+
+  const items = useMemo<Notification[]>(
+    () => [
+      ...appNotifs.map((n) => ({
+        id: n.id,
+        title: n.title,
+        body: n.body,
+        kind: n.kind === "application" ? "update" : "promo",
+        link_url: "/admin/applications",
+        published_at: n.createdAt,
+      })),
+      ...(q.data ?? []),
+    ],
+    [appNotifs, q.data],
+  );
+  const unread =
+    appNotifs.filter((n) => !n.read).length +
+    (q.data ?? []).filter((n) => !lastSeen || n.published_at > lastSeen).length;
 
   return (
     <Popover
       onOpenChange={(open) => {
+        if (open) markAllRead();
         if (open && items.length) {
           const newest = items.reduce((a, b) => (a > b.published_at ? a : b.published_at), "");
           localStorage.setItem("sv_notif_seen", newest);
