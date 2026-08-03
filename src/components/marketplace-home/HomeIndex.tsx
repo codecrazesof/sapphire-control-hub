@@ -3510,45 +3510,25 @@ const stableSeed = (key: string) => {
   return Math.abs(h);
 };
 
-const DemoCard = ({ demo, index, isFavorite, onToggleFavorite }: { 
-
+const DemoCard = memo(({ demo, index, isFavorite, onToggleFavorite }: {
   demo: Demo; 
   index: number; 
   isFavorite: boolean;
   onToggleFavorite: () => void;
 }) => {
   const Icon = demo.icon;
-  const [isHovered, setIsHovered] = useState(false);
   const [activeTab, setActiveTab] = useState<'features' | 'tech'>('features');
-  const [showQuickView, setShowQuickView] = useState(false);
-  
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.03, 0.3), duration: 0.4 }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="relative"
-    >
-      <Card className={`bg-gradient-to-br from-[#1a2d4a] to-[#0d1e36] border-cyan-500/20 transition-all duration-500 overflow-hidden group h-full ${isHovered ? 'border-cyan-400/60 shadow-2xl shadow-cyan-500/20 scale-[1.02]' : ''}`}>
+    <div className="sv-card-shell relative">
+      <Card className="sv-card group h-full overflow-hidden border-cyan-500/20 bg-gradient-to-br from-[#1a2d4a] to-[#0d1e36]">
         <CardContent className="p-0 flex flex-col h-full">
           {/* Header with gradient */}
-          <div className={`bg-gradient-to-r ${demo.color} p-4 relative overflow-hidden`}>
-            {/* Animated background pattern */}
-            <div className={`absolute inset-0 opacity-20 transition-opacity duration-500 ${isHovered ? 'opacity-40' : ''}`}>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-8 -translate-y-8" />
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl transform -translate-x-4 translate-y-4" />
-            </div>
-            
+          <div className={`sv-card-head bg-gradient-to-r ${demo.color} p-4 relative overflow-hidden`}>
             <div className="flex justify-between items-start relative z-10">
-              <motion.div 
-                className="bg-white/20 p-3 rounded-xl backdrop-blur-sm"
-                animate={{ rotate: isHovered ? [0, -5, 5, 0] : 0 }}
-                transition={{ duration: 0.5 }}
-              >
+              <div className="sv-card-icon rounded-xl bg-white/20 p-3">
                 <Icon className="h-8 w-8 text-white" />
-              </motion.div>
+              </div>
               <div className="flex gap-2 items-center">
                 {demo.status === "COMING_SOON" && (
                   <Badge className="bg-yellow-500/90 text-black font-bold text-xs animate-pulse">
@@ -3557,125 +3537,100 @@ const DemoCard = ({ demo, index, isFavorite, onToggleFavorite }: {
                 )}
                 {demo.status === "ACTIVE" && (
                   <Badge className="bg-emerald-500/90 text-white font-bold text-xs flex items-center gap-1">
-                    <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                    <span className="sv-live-dot" />
                     LIVE DEMO
                   </Badge>
                 )}
               </div>
             </div>
-            
+
             {/* Quick action buttons on hover */}
-            <motion.div 
-              className="absolute bottom-2 right-2 flex gap-2"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
-              transition={{ duration: 0.2 }}
-            >
-              <button 
+            <div className="sv-card-quick absolute bottom-2 right-2 flex gap-2">
+              <button
+                data-no-3d
+                aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleFavorite();
                   toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites!');
                 }}
-                className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
+                className="sv-icon-btn"
               >
                 <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
               </button>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowQuickView(!showQuickView);
-                }}
-                className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
+              <a
+                href={demo.url}
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`Preview ${demo.name}`}
+                className="sv-icon-btn"
               >
                 <Eye className="h-4 w-4 text-white" />
-              </button>
-            </motion.div>
+              </a>
+            </div>
           </div>
 
           {/* Content */}
-          <div className="p-4 flex-1 flex flex-col">
+          <div className="p-5 flex-1 flex flex-col">
             <div className="flex items-start justify-between mb-1">
-              <h3 className="text-lg font-bold text-white leading-tight">{demo.name}</h3>
+              <h3 className="text-[17px] font-extrabold tracking-[-0.01em] text-white leading-snug">{demo.name}</h3>
               {demo.status === "ACTIVE" && (
                 <Badge className="bg-cyan-500/20 text-cyan-300 text-[10px] shrink-0 ml-2">
                   #{index + 1}
                 </Badge>
               )}
             </div>
-            <p className="text-cyan-400 text-xs mb-2 flex items-center gap-1">
+            <p className="text-cyan-300/90 text-[11px] font-semibold uppercase tracking-[0.08em] mb-2 flex items-center gap-1">
               <Award className="h-3 w-3" /> {demo.category}
             </p>
-            <p className="text-gray-400 text-sm mb-3 line-clamp-2">{demo.description}</p>
+            <p className="text-gray-400 text-[13px] leading-relaxed mb-3 line-clamp-2">{demo.description}</p>
 
             {/* Interactive Tabs */}
             <div className="mb-3">
               <div className="flex gap-1 mb-2">
                 <button
+                  data-no-3d
                   onClick={() => setActiveTab('features')}
-                  className={`text-xs px-2 py-1 rounded transition-all ${activeTab === 'features' ? 'bg-cyan-500/30 text-cyan-300' : 'text-gray-500 hover:text-gray-300'}`}
+                  className={`sv-tab ${activeTab === 'features' ? 'sv-tab-on' : ''}`}
                 >
                   Features
                 </button>
                 <button
+                  data-no-3d
                   onClick={() => setActiveTab('tech')}
-                  className={`text-xs px-2 py-1 rounded transition-all ${activeTab === 'tech' ? 'bg-purple-500/30 text-purple-300' : 'text-gray-500 hover:text-gray-300'}`}
+                  className={`sv-tab ${activeTab === 'tech' ? 'sv-tab-on sv-tab-alt' : ''}`}
                 >
                   Tech Stack
                 </button>
               </div>
-              
-              <motion.div 
-                className="min-h-[52px]"
-                initial={false}
-                animate={{ opacity: 1 }}
-                key={activeTab}
-              >
+
+              <div className="min-h-[52px] sv-fade-swap" key={activeTab}>
                 {activeTab === 'features' ? (
                   <div className="flex flex-wrap gap-1">
-                    {demo.features.map((feature, i) => (
-                      <motion.div
-                        key={feature}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.05 }}
-                      >
-                        <Badge variant="outline" className="text-[10px] border-cyan-500/30 text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 cursor-default transition-colors">
-                          {feature}
-                        </Badge>
-                      </motion.div>
+                    {demo.features.map((feature) => (
+                      <Badge key={feature} variant="outline" className="sv-chip text-[10px] border-cyan-500/30 text-cyan-300 bg-cyan-500/10">
+                        {feature}
+                      </Badge>
                     ))}
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-1">
-                    {[...demo.frontend, ...demo.backend].map((tech, i) => (
-                      <motion.div
-                        key={tech}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.05 }}
-                      >
-                        <Badge variant="outline" className="text-[10px] border-purple-500/30 text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 cursor-default transition-colors">
-                          {tech}
-                        </Badge>
-                      </motion.div>
+                    {[...demo.frontend, ...demo.backend].map((tech) => (
+                      <Badge key={tech} variant="outline" className="sv-chip text-[10px] border-purple-500/30 text-purple-300 bg-purple-500/10">
+                        {tech}
+                      </Badge>
                     ))}
                   </div>
                 )}
-              </motion.div>
+              </div>
             </div>
 
             {/* Price with animation */}
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-gray-500 line-through text-sm">{demo.price}</span>
-              <motion.span 
-                className="text-emerald-400 font-bold text-xl"
-                animate={{ scale: isHovered ? [1, 1.05, 1] : 1 }}
-                transition={{ duration: 0.3 }}
-              >
+            <div className="flex items-baseline gap-2 mb-4">
+              <span className="text-gray-500 line-through text-[13px]">{demo.price}</span>
+              <span className="sv-price text-emerald-300 font-black text-[22px] tracking-[-0.02em]">
                 {demo.discountPrice}
-              </motion.span>
-              <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs animate-pulse">
+              </span>
+              <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-[10px] font-bold">
                 40% OFF
               </Badge>
             </div>
@@ -3685,12 +3640,12 @@ const DemoCard = ({ demo, index, isFavorite, onToggleFavorite }: {
               {demo.status === "ACTIVE" ? (
                 <>
                   <a href={demo.url} className="flex-1">
-                    <Button className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all">
+                    <Button className="sv-btn sv-btn-cyan w-full">
                       <Play className="h-4 w-4 mr-2" /> Live Demo
                     </Button>
                   </a>
                   <Button 
-                    className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all"
+                    className="sv-btn sv-btn-emerald flex-1"
                     onClick={() => toast.success("🎉 Redirecting to purchase...", { description: `${demo.name} - ${demo.discountPrice}` })}
                   >
                     <ShoppingCart className="h-4 w-4 mr-2" /> Buy Now
@@ -3699,13 +3654,13 @@ const DemoCard = ({ demo, index, isFavorite, onToggleFavorite }: {
               ) : (
                 <>
                   <Button 
-                    className="flex-1 bg-gray-600/50 cursor-not-allowed text-gray-400 border border-gray-500/30"
+                    className="sv-btn sv-btn-muted flex-1"
                     disabled
                   >
                     <Clock className="h-4 w-4 mr-2" /> Coming Soon
                   </Button>
                   <Button 
-                    className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white shadow-lg shadow-yellow-500/25 hover:shadow-yellow-500/40 transition-all"
+                    className="sv-btn sv-btn-gold flex-1"
                     onClick={() => toast.info("📧 We'll notify you when this is available!", { description: demo.name })}
                   >
                     <Bell className="h-4 w-4 mr-2" /> Notify Me
@@ -3715,12 +3670,7 @@ const DemoCard = ({ demo, index, isFavorite, onToggleFavorite }: {
             </div>
             
             {/* Quick Stats on hover */}
-            <motion.div 
-              className="mt-3 pt-3 border-t border-cyan-500/10 grid grid-cols-3 gap-2"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0, height: isHovered ? 'auto' : 0 }}
-              transition={{ duration: 0.2 }}
-            >
+            <div className="sv-card-stats mt-3 pt-3 border-t border-cyan-500/10 grid grid-cols-3 gap-2">
               <div className="text-center">
                 <p className="text-cyan-400 text-lg font-bold">{50 + (stableSeed(demo.id) % 50)}+</p>
                 <p className="text-gray-500 text-[10px]">Clients</p>
@@ -3734,12 +3684,13 @@ const DemoCard = ({ demo, index, isFavorite, onToggleFavorite }: {
                 <p className="text-gray-500 text-[10px]">Delivery</p>
               </div>
 
-            </motion.div>
+            </div>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
-};
+});
+DemoCard.displayName = "DemoCard";
 
 export default Index;
