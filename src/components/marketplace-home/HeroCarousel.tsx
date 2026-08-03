@@ -102,14 +102,14 @@ const HeroCarousel = () => {
             >
               <a
                 href={product.cta_link}
-                className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white text-gray-900 font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] hover:shadow-[0_25px_60px_-10px_rgba(0,0,0,0.6)] border border-white/60"
+                className="sv-btn sv-btn-hero-light group !h-14 !rounded-2xl !px-8 !text-base"
               >
                 <Play className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
                 {product.cta_primary}
               </a>
               <a
                 href="/demos"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white/15 backdrop-blur-md text-white font-semibold border border-white/40 hover:bg-white/25 hover:scale-105 transition-all shadow-xl"
+                className="sv-btn sv-btn-hero-glass !h-14 !rounded-2xl !px-8 !text-base"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {product.cta_secondary}
@@ -118,10 +118,10 @@ const HeroCarousel = () => {
           </div>
         </div>
 
-      <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 hover:scale-110 transition-all shadow-2xl border border-white/20">
+      <button data-no-3d aria-label="Previous slide" onClick={prev} className="sv-icon-btn absolute left-4 top-1/2 -translate-y-1/2 z-20 !h-12 !w-12">
         <ChevronLeft className="w-6 h-6" />
       </button>
-      <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 hover:scale-110 transition-all shadow-2xl border border-white/20">
+      <button data-no-3d aria-label="Next slide" onClick={next} className="sv-icon-btn absolute right-4 top-1/2 -translate-y-1/2 z-20 !h-12 !w-12">
         <ChevronRight className="w-6 h-6" />
       </button>
 
@@ -129,8 +129,10 @@ const HeroCarousel = () => {
         {slides.map((_, i) => (
           <button
             key={i}
+            data-no-3d
+            aria-label={`Go to slide ${i + 1}`}
             onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i); }}
-            className={`h-2.5 rounded-full transition-all shadow-lg ${i === current ? "bg-white w-8" : "bg-white/40 w-2.5 hover:bg-white/70"}`}
+            className={`h-2.5 rounded-full transition-all duration-300 shadow-lg ${i === current ? "bg-white w-8" : "bg-white/40 w-2.5 hover:bg-white/70"}`}
           />
         ))}
       </div>
