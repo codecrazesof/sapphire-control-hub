@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import {
   Sparkles, GraduationCap, Stethoscope, Utensils, Hotel, Home, Car, Plane,
   CreditCard, Factory, Users, Truck, Building, Megaphone, Wallet, Briefcase,
