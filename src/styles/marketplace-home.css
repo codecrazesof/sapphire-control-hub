@@ -16,11 +16,21 @@
   min-height: 100vh;
   color: #fff;
   background-color: var(--premium-canvas-deep);
+}
+
+/* Fixed ambient canvas as its own composited layer — replaces the
+   background-attachment:fixed repaint that made scrolling vibrate. */
+.mpc-home::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  transform: translateZ(0);
   background-image:
     radial-gradient(ellipse 85% 34% at 12% 4%, var(--premium-cyan-glow), transparent 68%),
     radial-gradient(ellipse 70% 30% at 92% 18%, var(--premium-gold-glow), transparent 72%),
     linear-gradient(180deg, var(--premium-canvas), var(--premium-canvas-deep) 48%, var(--premium-canvas));
-  background-attachment: fixed;
 }
 
 @keyframes kr-stagger-in {
