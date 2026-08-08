@@ -526,19 +526,3 @@
   .mpc-home button:active { transform: none !important; transition: none !important; }
   .sv-fade-swap { animation: none; }
 }
-
-/* Opportunity ticker — continuous, GPU composited marquee */
-@keyframes sv-ticker-move { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
-.sv-ticker-track {
-  display: flex;
-  width: max-content;
-  will-change: transform;
-  animation: sv-ticker-move 60s linear infinite;
-}
-.sv-ticker:hover .sv-ticker-track,
-.sv-ticker:focus-within .sv-ticker-track { animation-play-state: paused; }
-@media (max-width: 640px) { .sv-ticker-track { animation-duration: 38s; } }
-@media (prefers-reduced-motion: reduce) {
-  .sv-ticker-track { animation: none; }
-  .sv-ticker { overflow-x: auto; }
-}
