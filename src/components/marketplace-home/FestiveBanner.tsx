@@ -71,16 +71,16 @@ const OPPORTUNITIES: Opportunity[] = [
 const TickerItem = ({ o }: { o: Opportunity }) => {
   const Icon = o.icon;
   return (
-    <div className="flex flex-shrink-0 items-center gap-2.5 border-r border-white/10 px-5 py-1.5">
+    <div className="flex flex-shrink-0 items-center gap-2.5 px-5 py-1">
       <Icon className={`h-3.5 w-3.5 flex-shrink-0 ${o.color}`} />
       <span className="text-[11px] font-black uppercase tracking-[0.14em] text-white whitespace-nowrap">
         {o.title}
       </span>
-      <span className="text-[11px] font-medium text-white/70 whitespace-nowrap">{o.text}</span>
+      <span className="text-[11px] font-medium text-white/85 whitespace-nowrap">{o.text}</span>
       <Link
         to="/apply/$role"
         params={{ role: o.role }}
-        className="rounded-full border border-cyan-300/40 bg-cyan-400/15 px-3 py-[3px] text-[10px] font-black uppercase tracking-[0.12em] text-cyan-100 transition-colors hover:bg-cyan-400/30 hover:text-white whitespace-nowrap"
+        className="rounded-md border border-white/25 bg-white/20 px-2.5 py-[2px] text-[10px] font-black uppercase tracking-[0.12em] text-white transition-colors hover:bg-white/35 whitespace-nowrap"
       >
         Join Us
       </Link>
@@ -89,7 +89,7 @@ const TickerItem = ({ o }: { o: Opportunity }) => {
 };
 
 const FestiveBanner = () => (
-  <div className="sv-ticker relative w-full overflow-hidden border-y border-white/10 bg-[oklch(0.19_0.05_265)]">
+  <div className="sv-ticker relative w-full overflow-hidden bg-[oklch(0.55_0.19_264)]">
     <div className="sv-ticker-track">
       {[0, 1].map((dup) => (
         <div key={dup} className="flex" aria-hidden={dup === 1}>
