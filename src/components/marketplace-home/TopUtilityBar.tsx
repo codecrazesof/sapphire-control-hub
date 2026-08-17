@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@/lib/serverFn";
-import { readSession, type DemoUser } from "@/lib/nexus-auth";
+import { supabase, readSession, type DemoUser } from "@/lib/nexus-auth";
 import { signOut } from "@/lib/auth-bridge";
 import { roleLabel } from "@/lib/roles";
 import { toast } from "sonner";
