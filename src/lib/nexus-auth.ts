@@ -95,7 +95,7 @@ export const supabase = {
       writeSession(userForHandle(handle));
       return ok;
     },
-    async signInWithOtp(payload: { email?: string; phone?: string }) {
+    async signInWithOtp(payload: { email?: string; phone?: string }, _options?: unknown) {
       if (!payload.email && !payload.phone) return err("Enter an email or mobile number.");
       return ok;
     },
@@ -113,7 +113,7 @@ export const supabase = {
       writeSession(userForHandle(`employee@${domain}`, "employee"));
       return { data: { url: null as string | null }, error: null };
     },
-    async resetPasswordForEmail(email: string) {
+    async resetPasswordForEmail(email: string, _options?: unknown) {
       if (!email.includes("@")) return err("Enter a valid email address.");
       return ok;
     },
@@ -128,7 +128,7 @@ export const supabase = {
 
 export const lovable = {
   auth: {
-    async signInWithOAuth(provider: "google" | "apple" | "microsoft") {
+    async signInWithOAuth(provider: "google" | "apple" | "microsoft", _options?: unknown) {
       writeSession(userForHandle(`${provider}.user@softwarevala.com`, "customer"));
       return { error: null as null | Error, redirected: false };
     },
@@ -160,18 +160,18 @@ export async function createQrSession(_input?: unknown) {
   return { token };
 }
 
-export async function pollQrSession({ data }: { data: { token: string } }) {
-  if (typeof window === "undefined") return { status: "pending" as const, token_hash: null };
+export async function pollQrSession({ data }: { data: { token: string } }): Promise<{ status: "pending" | "approved" | "expired"; token_hash: string | null }> {
+  if (typeof window === "undefined") return { status: "pending", token_hash: null };
   try {
     const raw = window.localStorage.getItem(QR_KEY);
     const parsed = raw ? (JSON.parse(raw) as { token: string; status: string; handle?: string }) : null;
     if (parsed && parsed.token === data.token && parsed.status === "approved") {
-      return { status: "approved" as const, token_hash: `demo:${parsed.handle ?? "customer"}` };
+      return { status: "approved", token_hash: `demo:${parsed.handle ?? "customer"}` };
     }
   } catch {
     /* ignore */
   }
-  return { status: "pending" as const, token_hash: null };
+  return { status: "pending", token_hash: null };
 }
 
 export async function approveQrSession({ data }: { data: { token: string } }) {
