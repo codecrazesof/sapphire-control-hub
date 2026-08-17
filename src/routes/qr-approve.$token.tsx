@@ -1,8 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { approveQrSession } from "@/lib/auth-methods.functions";
-import { supabase } from "@/integrations/supabase/client";
+import { approveQrSession, supabase } from "@/lib/nexus-auth";
 
 export const Route = createFileRoute("/qr-approve/$token")({
   head: () => ({
@@ -24,7 +22,7 @@ export const Route = createFileRoute("/qr-approve/$token")({
 function QrApprovePage() {
   const { token } = Route.useParams();
   const navigate = useNavigate();
-  const approve = useServerFn(approveQrSession);
+  const approve = approveQrSession;
   const [state, setState] = useState<"checking" | "ready" | "working" | "done" | "error">("checking");
   const [message, setMessage] = useState("");
 

@@ -11,14 +11,13 @@ import {
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LanguageSelect } from "@/components/i18n/LanguageSelect";
 import { findLanguage } from "@/lib/languages";
-import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import {
+  supabase, lovable,
   createQrSession, pollQrSession, signInWithLicenseKey, signInWithUsername,
-} from "@/lib/auth-methods.functions";
+} from "@/lib/nexus-auth";
 import { toast } from "sonner";
 import { OwlStage } from "@/components/owl/OwlStage";
-import checkerBgAsset from "@/assets/softwarevala-checker-bg.jpg.asset.json";
+const checkerBgAsset = { url: "/brand/softwarevala-flip.jpg" };
 
 const loginSearchSchema = z.object({ next: z.string().optional() });
 
