@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as ApplyIndexRouteImport } from './routes/apply.index'
 import { Route as ApplyRoleRouteImport } from './routes/apply.$role'
+import { Route as DashboardRoleRouteImport } from './routes/dashboard.$role'
 import { Route as QrApproveTokenRouteImport } from './routes/qr-approve.$token'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const ApplyRoleRoute = ApplyRoleRouteImport.update({
   path: '/apply/$role',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoleRoute = DashboardRoleRouteImport.update({
+  id: '/dashboard/$role',
+  path: '/dashboard/$role',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QrApproveTokenRoute = QrApproveTokenRouteImport.update({
   id: '/qr-approve/$token',
   path: '/qr-approve/$token',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/apply/$role': typeof ApplyRoleRoute
+  '/dashboard/$role': typeof DashboardRoleRoute
   '/qr-approve/$token': typeof QrApproveTokenRoute
   '/apply/': typeof ApplyIndexRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/apply/$role': typeof ApplyRoleRoute
+  '/dashboard/$role': typeof DashboardRoleRoute
   '/qr-approve/$token': typeof QrApproveTokenRoute
   '/apply': typeof ApplyIndexRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/apply/$role': typeof ApplyRoleRoute
+  '/dashboard/$role': typeof DashboardRoleRoute
   '/qr-approve/$token': typeof QrApproveTokenRoute
   '/apply/': typeof ApplyIndexRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin/applications'
     | '/apply/$role'
+    | '/dashboard/$role'
     | '/qr-approve/$token'
     | '/apply/'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin/applications'
     | '/apply/$role'
+    | '/dashboard/$role'
     | '/qr-approve/$token'
     | '/apply'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/admin/applications'
     | '/apply/$role'
+    | '/dashboard/$role'
     | '/qr-approve/$token'
     | '/apply/'
   fileRoutesById: FileRoutesById
@@ -104,6 +116,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   AdminApplicationsRoute: typeof AdminApplicationsRoute
   ApplyRoleRoute: typeof ApplyRoleRoute
+  DashboardRoleRoute: typeof DashboardRoleRoute
   QrApproveTokenRoute: typeof QrApproveTokenRoute
   ApplyIndexRoute: typeof ApplyIndexRoute
 }
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyRoleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/$role': {
+      id: '/dashboard/$role'
+      path: '/dashboard/$role'
+      fullPath: '/dashboard/$role'
+      preLoaderRoute: typeof DashboardRoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/qr-approve/$token': {
       id: '/qr-approve/$token'
       path: '/qr-approve/$token'
@@ -160,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   AdminApplicationsRoute: AdminApplicationsRoute,
   ApplyRoleRoute: ApplyRoleRoute,
+  DashboardRoleRoute: DashboardRoleRoute,
   QrApproveTokenRoute: QrApproveTokenRoute,
   ApplyIndexRoute: ApplyIndexRoute,
 }
