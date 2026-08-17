@@ -95,7 +95,7 @@ export const supabase = {
       writeSession(userForHandle(handle));
       return ok;
     },
-    async signInWithOtp(payload: { email?: string; phone?: string }, _options?: unknown) {
+    async signInWithOtp(payload: { email?: string; phone?: string; options?: unknown }) {
       if (!payload.email && !payload.phone) return err("Enter an email or mobile number.");
       return ok;
     },
