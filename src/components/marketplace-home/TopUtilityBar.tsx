@@ -20,7 +20,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@/lib/serverFn";
+import { readSession, type DemoUser } from "@/lib/nexus-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { signOut } from "@/lib/auth-bridge";
+import { roleLabel } from "@/lib/roles";
 import { toast } from "sonner";
 import {
   Bell,
@@ -973,66 +976,62 @@ function Favorites({ count }: { count: number }) {
 /* ------------------------------------------------------------------ */
 
 function LoginPill({ t }: { t: (s: string) => string }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [user, setUser] = useState<DemoUser | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }: any) => setUserEmail(data.session?.user.email ?? null));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e: any, session: any) =>
-      setUserEmail(session?.user.email ?? null),
-    );
-    return () => sub.subscription.unsubscribe();
+    const sync = () => setUser(readSession());
+    sync();
+    window.addEventListener("sv-auth-change", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("sv-auth-change", sync);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
-
-  const signIn = async () => {
-    setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
-    if (error) toast.error(error.message);
-    else toast.success("Signed in");
-  };
 
   return (
     <Popover>
       <PopoverTrigger className={TRIGGER}>
         <LogIn className="h-3.5 w-3.5 text-emerald-300 transition-transform duration-300 group-hover:translate-x-0.5" />
-        <span className="hidden sm:inline">{userEmail ? userEmail.split("@")[0] : t("Login")}</span>
+        <span className="hidden sm:inline">{user ? user.full_name : t("Login")}</span>
       </PopoverTrigger>
       <PopoverContent align="end" className={PANEL}>
-        <PanelHead icon={LogIn} title={t("Login")} note={userEmail ?? "Sign in to your account"} />
+        <PanelHead icon={LogIn} title={t("Login")} note={user?.email ?? "Sign in to your Nexus OS workspace"} />
         <div className="space-y-2 p-3">
-          {userEmail ? (
-            <Button
-              className="w-full"
-              variant="secondary"
-              onClick={async () => {
-                await supabase.auth.signOut();
-                toast.success("Signed out");
-              }}
-            >
-              Sign out
-            </Button>
+          {user ? (
+            <>
+              <Link
+                to="/dashboard/$role"
+                params={{ role: user.role }}
+                className="block w-full rounded-md bg-white/10 px-3 py-2 text-center text-[12.5px] font-medium text-white hover:bg-white/20"
+              >
+                Open {roleLabel(user.role)} Dashboard
+              </Link>
+              <Button
+                className="w-full"
+                variant="secondary"
+                onClick={async () => {
+                  await signOut();
+                  setUser(null);
+                  toast.success("Signed out");
+                }}
+              >
+                Sign out
+              </Button>
+            </>
           ) : (
             <>
-              <Input
-                type="email"
-                placeholder="you@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-9 border-white/15 bg-white/5 text-[12.5px] text-white placeholder:text-white/40"
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-9 border-white/15 bg-white/5 text-[12.5px] text-white placeholder:text-white/40"
-              />
-              <Button className="w-full" disabled={busy || !email || !password} onClick={signIn}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : t("Login")}
-              </Button>
+              <Link
+                to="/login"
+                search={{}}
+                className="block w-full rounded-md bg-gradient-to-r from-fuchsia-500 to-amber-400 px-3 py-2 text-center text-[12.5px] font-semibold text-black hover:opacity-90"
+              >
+                Enter Nexus OS Login
+              </Link>
+              <p className="text-[11px] leading-relaxed text-white/50">
+                Demo accounts: reseller@ · franchise@ · influencer@ · affiliate@ · author@softwarevala.com — password
+                <span className="font-mono text-white/70"> demo1234</span>
+              </p>
             </>
           )}
         </div>
