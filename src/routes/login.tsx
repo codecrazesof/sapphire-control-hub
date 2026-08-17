@@ -323,7 +323,9 @@ function NexusLogin() {
       <footer className="relative z-10 mx-auto w-full max-w-[1600px] shrink-0 truncate px-6 pb-2 text-center text-[10px] text-white/40">
         Software Vala Nexus OS · A global enterprise operating system
         <span className="mx-2 text-white/25">·</span>
-        <Link to="/chat" className="text-white/60 hover:text-white/90 underline underline-offset-2">Internal Chat</Link>
+        <Link to="/" className="text-white/60 hover:text-white/90 underline underline-offset-2">Back to Marketplace</Link>
+        <span className="mx-2 text-white/25">·</span>
+        <span className="text-white/50">Demo accounts: reseller@softwarevala.com · franchise@ · influencer@ · affiliate@ · author@ — password <span className="font-mono text-white/70">demo1234</span></span>
       </footer>
 
 
