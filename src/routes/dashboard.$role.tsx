@@ -8,6 +8,7 @@ import { getAuthenticatedRole, signOut } from "@/lib/auth-bridge";
 import { isRoleKey, roleLabel, type RoleKey } from "@/lib/roles";
 import { readSession, type DemoUser } from "@/lib/nexus-auth";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { listApplications, subscribe, type Application } from "@/lib/applications/store";
 
 export const Route = createFileRoute("/dashboard/$role")({
   ssr: false,
@@ -166,12 +167,75 @@ const FALLBACK: RoleView = {
 };
 
 function DashboardPage() {
+  return <DashboardInner />;
+}
+
+const STATUS_UI: Record<string, { chip: string; text: string }> = {
+  pending: { chip: "bg-amber-300/12 text-amber-200 ring-amber-300/30", text: "Under review by the boss panel." },
+  approved: { chip: "bg-emerald-400/12 text-emerald-200 ring-emerald-300/30", text: "Approved — dashboard access granted." },
+  rejected: { chip: "bg-rose-400/12 text-rose-200 ring-rose-300/30", text: "Rejected — you can re-apply anytime." },
+};
+
+function ApplicationStatus({ apps, role, email }: { apps: Application[]; role: string; email?: string | undefined }) {
+  const mine = apps.filter(
+    (a) => a.role === role || (email && a.email.toLowerCase() === email.toLowerCase()),
+  );
+
+  return (
+    <section className="mt-4 rounded-2xl bg-white/[0.04] p-5 ring-1 ring-white/10 backdrop-blur-xl">
+      <h2 className="flex items-center gap-2 text-[13px] font-semibold">
+        <BadgeCheck className="size-4 text-white/60" /> Application status
+      </h2>
+      {mine.length === 0 ? (
+        <p className="mt-3 text-[12.5px] text-white/50">
+          No application submitted yet.{" "}
+          <Link to="/apply" className="text-cyan-300 underline-offset-2 hover:underline">
+            Apply for a role
+          </Link>
+          .
+        </p>
+      ) : (
+        <ul className="mt-3 divide-y divide-white/[0.07]">
+          {mine.map((a) => {
+            const ui = STATUS_UI[a.status]!;
+            return (
+              <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <div className="min-w-0">
+                  <p className="text-[13px] font-medium">
+                    {a.roleLabel.replace("Become ", "")} · {a.applicant}
+                  </p>
+                  <p className="text-[11.5px] text-white/50">{ui.text}</p>
+                  <p className="text-[10.5px] text-white/35">
+                    Submitted {new Date(a.submittedAt).toLocaleString()}
+                    {a.reviewedAt ? ` · Reviewed ${new Date(a.reviewedAt).toLocaleString()}` : ""}
+                  </p>
+                </div>
+                <span className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase ring-1 ${ui.chip}`}>
+                  {a.status}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function DashboardInner() {
   const { role } = Route.useParams();
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
   const [activeRole, setActiveRole] = useState<RoleKey | null>(null);
   const [user, setUser] = useState<DemoUser | null>(null);
   const [tab, setTab] = useState("Overview");
+  const [apps, setApps] = useState<Application[]>([]);
+
+  useEffect(() => {
+    const sync = () => setApps(listApplications());
+    sync();
+    return subscribe(sync);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -300,6 +364,8 @@ function DashboardPage() {
             </div>
           </aside>
         </section>
+
+        <ApplicationStatus apps={apps} role={key} email={user?.email} />
 
         {/* Tabs */}
         <nav className="mt-4 flex flex-wrap gap-2">
