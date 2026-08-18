@@ -8,6 +8,7 @@ import { getAuthenticatedRole, signOut } from "@/lib/auth-bridge";
 import { isRoleKey, roleLabel, type RoleKey } from "@/lib/roles";
 import { readSession, type DemoUser } from "@/lib/nexus-auth";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { listApplications, subscribe, type Application } from "@/lib/applications/store";
 
 export const Route = createFileRoute("/dashboard/$role")({
   ssr: false,
@@ -172,6 +173,13 @@ function DashboardPage() {
   const [activeRole, setActiveRole] = useState<RoleKey | null>(null);
   const [user, setUser] = useState<DemoUser | null>(null);
   const [tab, setTab] = useState("Overview");
+  const [apps, setApps] = useState<Application[]>([]);
+
+  useEffect(() => {
+    const sync = () => setApps(listApplications());
+    sync();
+    return subscribe(sync);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
