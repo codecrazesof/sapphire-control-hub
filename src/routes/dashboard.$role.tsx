@@ -309,6 +309,8 @@ function DashboardPage() {
           </aside>
         </section>
 
+        <ApplicationStatus apps={apps} role={key} email={user?.email} />
+
         {/* Tabs */}
         <nav className="mt-4 flex flex-wrap gap-2">
           {view.actions.map((a) => (
