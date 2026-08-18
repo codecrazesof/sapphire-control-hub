@@ -176,7 +176,7 @@ const STATUS_UI: Record<string, { chip: string; text: string }> = {
   rejected: { chip: "bg-rose-400/12 text-rose-200 ring-rose-300/30", text: "Rejected — you can re-apply anytime." },
 };
 
-function ApplicationStatus({ apps, role, email }: { apps: Application[]; role: string; email?: string }) {
+function ApplicationStatus({ apps, role, email }: { apps: Application[]; role: string; email?: string | undefined }) {
   const mine = apps.filter(
     (a) => a.role === role || (email && a.email.toLowerCase() === email.toLowerCase()),
   );
